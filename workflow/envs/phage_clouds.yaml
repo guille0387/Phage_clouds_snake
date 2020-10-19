@@ -1,0 +1,14 @@
+channels:
+    - anaconda
+    - conda-forge
+    - etetoolkit
+dependencies:
+    - biopython =1.78
+    - numpy
+    - pandas
+    - ete3
+    - urllib3
+    - networkx
+    - pyvis
+    - tqdm
+    - matplotlib
