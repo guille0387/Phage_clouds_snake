@@ -95,17 +95,17 @@ def read_gbk(gbfile):
 if __name__ == '__main__':
     gbk_dir = snakemake.input[0]
     out_file = snakemake.output[0]
-    if not os.path.exists('ncbi_taxa.sqlite'):
+    if not os.path.exists('resources/ncbi_taxa.sqlite'):
         print("NCBI taxonomy file ncbi_taxa.sqlite not found, downloading NCBI's taxdump file...")
-        urlretrieve('https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz', 'taxdump.tar.gz')
+        urlretrieve('https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz', 'resources/taxdump.tar.gz')
         print('Done!')
         print('Generating ncbi_taxa.sqlite...')
-        ncbi = NCBITaxa(dbfile = 'ncbi_taxa.sqlite', taxdump_file = 'taxdump.tar.gz')
+        ncbi = NCBITaxa(dbfile = 'resources/ncbi_taxa.sqlite', taxdump_file = 'resources/taxdump.tar.gz')
         print('Done creating ncbi_taxa.sqlite!')
 
     else:
         print('Reading local instance of ncbi_taxa.sqlite...')
-        ncbi = NCBITaxa(dbfile = 'ncbi_taxa.sqlite')
+        ncbi = NCBITaxa(dbfile = 'resources/ncbi_taxa.sqlite')
         print('Done')
 
     assert os.path.exists(gbk_dir), 'Directory containing gbk files not found'

@@ -1,14 +1,19 @@
+import os
+
+if not os.path.exists('results'):
+    os.mkdir('results')
+
 configfile: "config/config.yaml"
 
 rule all:
     input:
-        f'{config["host"]}_{config["threshold"]}_clouds.html'
+        f'results/{config["host"]}_{config["threshold"]}_clouds.html'
 
 rule get_fasta:
     input:
         config["input_dir"]
     output:
-        "all_gbk_records.fna"
+        "results/all_gbk_records.fna"
     conda:
         "envs/phage_clouds.yaml"
     script:
@@ -16,9 +21,9 @@ rule get_fasta:
 
 rule ref_sketch:
     input:
-        "all_gbk_records.fna"
+        "results/all_gbk_records.fna"
     output:
-        "all_gbk_records_k15_s24000.msh"
+        "results/all_gbk_records_k15_s24000.msh"
     threads: 10
     run:
         print('mash sketching parameters: kmer_size = 15, sketch_size = 24000')
@@ -26,10 +31,10 @@ rule ref_sketch:
 
 rule mash_dist:
     input:
-        "all_gbk_records_k15_s24000.msh",
-        "all_gbk_records.fna"
+        "results/all_gbk_records_k15_s24000.msh",
+        "results/all_gbk_records.fna"
     output:
-        "all_vs_all_nucl_k15_s24000.tbl"
+        "results/all_vs_all_nucl_k15_s24000.tbl"
     threads: 10
     run:
         print('Calculating all vs all mash distance table (p-value reporting threshold 1e-10)...')
@@ -40,7 +45,7 @@ rule annot_dict:
     input:
         config["input_dir"]
     output:
-        "gbk_records_metadata.pkl"
+        "results/gbk_records_metadata.pkl"
     conda:
         "envs/phage_clouds.yaml"
     script:
@@ -48,11 +53,11 @@ rule annot_dict:
 
 rule get_network:
     input:
-        mashtbl="all_vs_all_nucl_k15_s24000.tbl",
-        annotdict="gbk_records_metadata.pkl"
+        mashtbl="results/all_vs_all_nucl_k15_s24000.tbl",
+        annotdict="results/gbk_records_metadata.pkl"
     output:
-        plaingraph="all_gbk_records_graph.nxpkl.gz",
-        annotgraph="all_gbk_records_graph_annotated.nxpkl.gz"
+        plaingraph="results/all_gbk_records_graph.nxpkl.gz",
+        annotgraph="results/all_gbk_records_graph_annotated.nxpkl.gz"
     conda:
         "envs/phage_clouds.yaml"
     script:
@@ -60,9 +65,9 @@ rule get_network:
 
 rule draw_graph:
     input:
-        "all_gbk_records_graph_annotated.nxpkl.gz"
+        "results/all_gbk_records_graph_annotated.nxpkl.gz"
     output:
-        f'{config["host"]}_{config["threshold"]}_clouds.html'
+        f'results/{config["host"]}_{config["threshold"]}_clouds.html'
     conda:
         "envs/phage_clouds.yaml"
     params:
