@@ -3,8 +3,9 @@
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.7.0-brightgreen.svg)](https://snakemake.bitbucket.io)
 [![Build Status](https://travis-ci.org/snakemake-workflows/Phage_clouds_snake.svg?branch=master)](https://travis-ci.org/snakemake-workflows/Phage_clouds_snake)
 
-This is the template for a new Snakemake workflow. Replace this text with a comprehensive description covering the purpose and domain.
-Insert your code into the respective folders, i.e. `scripts`, `rules`, and `envs`. Define the entry point of the workflow in the `Snakefile` and the main configuration in the `config.yaml` file.
+This is the snakemake implementation of the Phage Clouds workflow. At the moment, the workflow's structure is designed to work in the CBD server, however it can be customized for a more general use. It takes a directory containing genbank records of phage genome sequences, and returns an intergenomic distance network of phages whose clusters are defined based on user-defined host genus and distance threshold. The following diagram illustrates the overall Phage_clouds workflow:
+
+![Phage_clouds](https://github.com/guille0387/Phage_clouds_snake/blob/master/dag.svg)
 
 ## Authors
 
@@ -101,4 +102,3 @@ In case you have also changed or added steps, please consider contributing them 
 ## Testing
 
 Test cases are in the subfolder `.test`. They are automatically executed via continuous integration with [Github Actions](https://github.com/features/actions).
-
