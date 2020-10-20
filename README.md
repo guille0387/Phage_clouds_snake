@@ -7,18 +7,25 @@ This is the snakemake implementation of the Phage Clouds workflow. At the moment
 
 ![Phage_clouds](https://github.com/guille0387/Phage_clouds_snake/blob/master/dag.png)
 
+Database icon taken from: <div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
 ## Authors
 
 * Guillermo Rangel (@guille0387)
 
 ## Usage
 
-If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) repository and, if available, its DOI (see above).
+### Step 1: Install Snakemake
 
-### Step 1: Obtain a copy of this workflow
+It is recommended to install snakemake using conda and creating an independent environment for it. Instructions on how to install snakemake can be found ![here](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
 
-1. Create a new github repository using this workflow [as a template](https://help.github.com/en/articles/creating-a-repository-from-a-template).
-2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the newly created repository to your local system, into the place where you want to perform the data analysis.
+However, from within the CBD server it is possible to activate a ready-to-use environment that already has snakemake installed in it. Simply run the following command from the terminal:
+
+`conda activate /home/guilermo/software/conda_envs/snakemake`
+
+### Step 2: Clone git repo and add input data
+
+![Clone](https://help.github.com/en/articles/cloning-a-repository) this github repository to your 
 
 ### Step 2: Configure workflow
 
