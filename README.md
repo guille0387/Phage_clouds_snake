@@ -5,7 +5,7 @@
 
 This is the snakemake implementation of the Phage Clouds workflow. At the moment, the workflow's structure is designed to work in the CBD server, however it can be customized for a more general use. It takes a directory containing genbank records of phage genome sequences, and returns an intergenomic distance network of phages whose clusters are defined based on user-defined host genus and distance threshold. The following diagram illustrates the overall Phage_clouds workflow:
 
-![Phage_clouds](https://github.com/guille0387/Phage_clouds_snake/blob/master/dag.svg)
+![Phage_clouds](https://github.com/guille0387/Phage_clouds_snake/blob/master/dag.pdf)
 
 ## Authors
 
