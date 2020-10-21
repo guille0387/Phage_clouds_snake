@@ -7,7 +7,7 @@ This is the snakemake implementation of the Phage Clouds workflow. At the moment
 
 ![Phage_clouds](https://github.com/guille0387/Phage_clouds_snake/blob/master/dag.png)
 
-Database icon taken from: <div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+Database icon taken from [www.flaticon.com](https://www.flaticon.com/)
 
 ## Authors
 
@@ -34,8 +34,8 @@ This is a private repository, so if you don't have access to it please request a
 
 In addition to taking as input the directory containing the genbank files, the workflow also requires that the user indicates a bacterial host genus they are interested in and a distance threshold to be applied to the mash distance values. All these parameters must be set using the file config.yaml, located within the config directory. Edit the file to add the following details:
 
-input_dir: *name of directory containing gbk files*
-host: *bacterial host genus of your interest*
+input_dir: *name of directory containing gbk files*  
+host: *bacterial host genus of your interest*  
 threshold: *mash distance threshold to be applied to intergenomic distance network*
 
 ### Step 4: Execute workflow
