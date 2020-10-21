@@ -40,7 +40,7 @@ threshold: *mash distance threshold to be applied to intergenomic distance netwo
 
 ### Step 4: Execute workflow
 
-Run the command below to execute the workflow. NOTE: make sure you've activated the conda environment that contains snakemake.
+Run the command below from within the repository's root to execute the workflow. **NOTE**: make sure you've activated the conda environment that contains snakemake.
 
 `snakemake --cores 10 --use-conda`
 
