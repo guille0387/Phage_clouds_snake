@@ -21,7 +21,7 @@ It is recommended to install snakemake using [conda](https://conda.io/projects/c
 
 However, from within the CBD server it is possible to activate a ready-to-use environment that has snakemake installed in it. Simply run the following command from the terminal:
 
-`conda activate /home/guilermo/software/conda_envs/snakemake`
+`conda activate ~/projects/snakemake`
 
 ### Step 2: Clone git repo and add input data
 
