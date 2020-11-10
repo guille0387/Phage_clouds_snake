@@ -5,7 +5,7 @@ analysis/*
 !config
 !config/*
 !resources
-!resources/*
+resources/*tax*
 !workflow
 !workflow/**
 !.gitignore
