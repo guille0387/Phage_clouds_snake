@@ -64,8 +64,9 @@ def get_host_lineage(phage_record, tax_ranks):
                 host_lineage_dict = lineage_dict(item, tax_ranks)
                 counter += 1
             else:
+                other_lineage_dict = lineage_dict(item, tax_ranks)
                 for rank in tax_ranks:
-                    host_lineage_dict[rank].extend(lineage_dict(item, tax_ranks)[rank])
+                    host_lineage_dict[rank].extend(other_lineage_dict[rank])
     elif pd.isnull(phage_host_pair[1]):
         host_lineage_dict = {item:['not defined'] for item in tax_ranks}
     else:
@@ -88,7 +89,9 @@ def read_gbk(gbfile):
     phage_taxonomy = lineage_dict(taxid, phage_tax_ranks)
     genome_size = len(record.seq)
     host_taxonomy = get_host_lineage(record, host_tax_ranks)
-    d['organism'], d['taxid'], d['taxonomy'], d['genome_size'], d['host'] = (organism, taxid, phage_taxonomy, genome_size, host_taxonomy)
+    d['organism'], d['taxid'], d['genome_size']= (organism, taxid, genome_size)
+    d.update({f'phage_{key}':value for key,value in phage_taxonomy.items()})
+    d.update({f'host_{key}':value for key,value in host_taxonomy.items()})
     return (accession, d)
 
 
