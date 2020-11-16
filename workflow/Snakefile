@@ -18,7 +18,7 @@ rule get_fasta_metadata:
     conda:
         "envs/phage_clouds.yaml"
     script:
-        "scripts/get_fasta_from_gbk.py"
+        "scripts/get_fasta_metadata.py"
 
 rule ref_sketch:
     input:
