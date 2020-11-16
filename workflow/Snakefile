@@ -9,11 +9,12 @@ rule all:
     input:
         f'results/{config["host"]}_{config["threshold"]}_clouds.html'
 
-rule get_fasta:
+rule get_fasta_metadata:
     input:
         config["input_dir"]
     output:
-        "results/all_gbk_records.fna"
+        fa="results/all_gbk_records.fna",
+        meta="results/gbk_records_metadata.pkl"
     conda:
         "envs/phage_clouds.yaml"
     script:
@@ -40,16 +41,6 @@ rule mash_dist:
         print('Calculating all vs all mash distance table (p-value reporting threshold 1e-10)...')
         shell("mash dist -p 10 -i -t -v 1e-10 {input} > {output}")
         print(f'Done creating {output}')
-
-rule annot_dict:
-    input:
-        config["input_dir"]
-    output:
-        "results/gbk_records_metadata.pkl"
-    conda:
-        "envs/phage_clouds.yaml"
-    script:
-        "scripts/get_metadata_dict.py"
 
 rule get_network:
     input:
