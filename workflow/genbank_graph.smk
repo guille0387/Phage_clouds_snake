@@ -14,7 +14,7 @@ rule create_graph_files:
         plaingraph="genbank_graph_files/plain_graph.nxpkl.gz",
         annotgraph="genbank_graph_files/annotated_graph.nxpkl.gz"
 
-rule get_fasta_metadata:
+rule extract_from_gbk:
     input:
         config["input_dir"]
     output:
