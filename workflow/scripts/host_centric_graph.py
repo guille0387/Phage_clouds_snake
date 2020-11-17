@@ -29,10 +29,9 @@ def mod_nx_graph(graph, thres, host):
     keep_subgraphs = [item for item in connected_component_subgraphs(mod_graph) if any (host in y['host_genus'] for x,y in item.nodes(data = True))]
     joint_graph = nx.algorithms.operators.all.compose_all(keep_subgraphs)
     colorsd = {x:{'border':'#000000', 'background':'green'} if host in y['host_genus'] else {'border':'#000000', 'background':'red'} for x,y in joint_graph.nodes(data = True)}
-    titlesd = {x: f'Target host genera:<br>{";".join(y["host_genus"])}<br>Genome size:<br>{y["genome_size"]} bp<br>Phage genus:<br>{y["phage_genus"]}<br>Accession:<br>{x}' for x,y in joint_graph.nodes(data = True)}
+    titlesd = {x: f'{y["organism"]}<br>Target host genera:<br>{";".join(y["host_genus"])}<br>Genome size:<br>{y["genome_size"]} bp<br>Phage genus:<br>{y["phage_genus"]}' for x,y in joint_graph.nodes(data = True)}
     nx.set_node_attributes(joint_graph, colorsd, 'color')
     nx.set_node_attributes(joint_graph, titlesd, 'title')
-    nx.relabel_nodes(joint_graph, {x:y['organism'] for x,y in joint_graph.nodes(data = True)}, copy = False)
     #max_genome = max([y['genome_size'] for x,y in joint_graph.nodes(data = True)])
     #for node in joint_graph.nodes():
     #    joint_graph.nodes[node]['size'] = joint_graph.nodes[node]['genome_size'] / max_genome
