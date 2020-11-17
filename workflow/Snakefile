@@ -1,68 +1,83 @@
 import os
 
-if not os.path.exists('results'):
-    os.mkdir('results')
-
 configfile: "config/config.yaml"
 
-rule all:
-    input:
-        f'results/{config["host"]}_{config["threshold"]}_clouds.html'
+graph_output_dir = f'{config["dataset"]}_graph_files'
 
-rule get_fasta_metadata:
-    input:
-        config["input_dir"]
-    output:
-        fa="results/all_gbk_records.fna",
-        meta="results/gbk_records_metadata.pkl"
-    conda:
-        "envs/phage_clouds.yaml"
-    script:
-        "scripts/get_fasta_metadata.py"
+if not os.path.exists(graph_output_dir):
+    os.mkdir(graph_output_dir)
 
-rule ref_sketch:
+subworkflow graph_workflow:
+    snakefile:
+            f'{config["dataset"]}_graph.smk'
+
+rule test_rule:
     input:
-        "results/all_gbk_records.fna"
+        graph_workflow(os.path.join(graph_output_dir, 'all_records_k15_s24000.msh'))
     output:
-        "results/all_gbk_records_k15_s24000.msh"
-    threads: 10
+        'test_rule_out.txt'
     run:
-        print('mash sketching parameters: kmer_size = 15, sketch_size = 24000')
-        shell("mash sketch -p 10 -i -o {output} -k 15 -s 24000 {input}")
+        print('Running test rule...')
+        shell("mash info {input} > {output}")
 
-rule mash_dist:
-    input:
-        "results/all_gbk_records_k15_s24000.msh",
-        "results/all_gbk_records.fna"
-    output:
-        "results/all_vs_all_nucl_k15_s24000.tbl"
-    threads: 10
-    run:
-        print('Calculating all vs all mash distance table (p-value reporting threshold 1e-10)...')
-        shell("mash dist -p 10 -i -t -v 1e-10 {input} > {output}")
-        print(f'Done creating {output}')
-
-rule get_network:
-    input:
-        mashtbl="results/all_vs_all_nucl_k15_s24000.tbl",
-        annotdict="results/gbk_records_metadata.pkl"
-    output:
-        plaingraph="results/all_gbk_records_graph.nxpkl.gz",
-        annotgraph="results/all_gbk_records_graph_annotated.nxpkl.gz"
-    conda:
-        "envs/phage_clouds.yaml"
-    script:
-        "scripts/generate_graph.py"
-
-rule draw_graph:
-    input:
-        "results/all_gbk_records_graph_annotated.nxpkl.gz"
-    output:
-        f'results/{config["host"]}_{config["threshold"]}_clouds.html'
-    conda:
-        "envs/phage_clouds.yaml"
-    params:
-        host=config["host"],
-        thres=config["threshold"]
-    script:
-        "scripts/draw_graph.py"
+# rule all:
+#     input:
+#         f'results/{config["host"]}_{config["threshold"]}_clouds.html'
+#
+# rule get_fasta_metadata:
+#     input:
+#         config["input_dir"]
+#     output:
+#         fa="results/all_gbk_records.fna",
+#         meta="results/gbk_records_metadata.pkl"
+#     conda:
+#         "envs/phage_clouds.yaml"
+#     script:
+#         "scripts/get_fasta_metadata.py"
+#
+# rule ref_sketch:
+#     input:
+#         "results/all_gbk_records.fna"
+#     output:
+#         "results/all_gbk_records_k15_s24000.msh"
+#     threads: 10
+#     run:
+#         print('mash sketching parameters: kmer_size = 15, sketch_size = 24000')
+#         shell("mash sketch -p 10 -i -o {output} -k 15 -s 24000 {input}")
+#
+# rule mash_dist:
+#     input:
+#         "results/all_gbk_records_k15_s24000.msh",
+#         "results/all_gbk_records.fna"
+#     output:
+#         "results/all_vs_all_nucl_k15_s24000.tbl"
+#     threads: 10
+#     run:
+#         print('Calculating all vs all mash distance table (p-value reporting threshold 1e-10)...')
+#         shell("mash dist -p 10 -i -t -v 1e-10 {input} > {output}")
+#         print(f'Done creating {output}')
+#
+# rule get_network:
+#     input:
+#         mashtbl="results/all_vs_all_nucl_k15_s24000.tbl",
+#         annotdict="results/gbk_records_metadata.pkl"
+#     output:
+#         plaingraph="results/all_gbk_records_graph.nxpkl.gz",
+#         annotgraph="results/all_gbk_records_graph_annotated.nxpkl.gz"
+#     conda:
+#         "envs/phage_clouds.yaml"
+#     script:
+#         "scripts/generate_graph.py"
+#
+# rule draw_graph:
+#     input:
+#         "results/all_gbk_records_graph_annotated.nxpkl.gz"
+#     output:
+#         f'results/{config["host"]}_{config["threshold"]}_clouds.html'
+#     conda:
+#         "envs/phage_clouds.yaml"
+#     params:
+#         host=config["host"],
+#         thres=config["threshold"]
+#     script:
+#         "scripts/draw_graph.py"
