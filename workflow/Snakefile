@@ -3,13 +3,16 @@ import os
 configfile: "config/config.yaml"
 
 graph_output_dir = f'{config["dataset"]}_graph_files'
+working_dir = os.getcwd()
 
 if not os.path.exists(graph_output_dir):
     os.mkdir(graph_output_dir)
 
 subworkflow graph_workflow:
+    workdir:
+        working_dir
     snakefile:
-            f'{config["dataset"]}_graph.smk'
+        f'{config["dataset"]}_graph.smk'
 
 rule test_rule:
     input:
