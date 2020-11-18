@@ -4,6 +4,7 @@ configfile: "config/config.yaml"
 
 graph_output_dir = f'{config["dataset"]}_graph_files'
 working_dir = os.getcwd()
+query_file = config["input_fasta"]
 
 if not os.path.exists(graph_output_dir):
     os.mkdir(graph_output_dir)
@@ -14,14 +15,17 @@ subworkflow graph_workflow:
     snakefile:
         f'{config["dataset"]}_graph.smk'
 
-rule test_rule:
+rule mash_dist:
     input:
-        graph_workflow(os.path.join(graph_output_dir, 'all_records_k15_s24000.msh'))
+        graph_workflow(os.path.join(graph_output_dir, 'all_records_k15_s24000.msh')),
+        query_file
     output:
-        'test_rule_out.txt'
+        f'results/{os.path.splitext(query_file)[0]}_mash_dist_k15_s24000.tsv'
+    threads: 10
     run:
-        print('Running test rule...')
-        shell("mash info {input} > {output}")
+        print('Calculating mash distances between query sequences and reference dataset...')
+        shell("mash dist -p 10 -i -v 1e-10 {input} > {output}")
+        print('Done creating {output}')
 
 # rule all:
 #     input:
