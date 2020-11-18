@@ -25,8 +25,21 @@ rule mash_dist:
     run:
         print('Calculating mash distances between query sequences and reference dataset...')
         shell("mash dist -p 10 -i -v 1e-10 {input} > {output}")
-        print('Done creating {output}')
+        print(f'Done creating {output}')
 
+rule get_query_network:
+    input:
+        fasta=query_file,
+        dist=f'results/{os.path.splitext(query_file)[0]}_mash_dist_k15_s24000.tsv',
+        ref_graph=graph_workflow(os.path.join(graph_output_dir, 'annotated_graph.nxpkl.gz'))
+    output:
+        f'results/{os.path.splitext(query_file)[0]}_query_graph.nxpkl.gz'
+    conda:
+        "envs/phage_clouds.yaml"
+    params:
+        thres=config["threshold"]
+    script:
+        "scripts/query_graph.py"
 # rule all:
 #     input:
 #         f'results/{config["host"]}_{config["threshold"]}_clouds.html'
