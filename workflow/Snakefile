@@ -40,6 +40,19 @@ rule get_query_network:
         thres=config["threshold"]
     script:
         "scripts/query_graph.py"
+
+rule draw_query_network:
+    input:
+        f'results/{os.path.splitext(query_file)[0]}_query_graph.nxpkl.gz'
+    output:
+        f'results/{os.path.splitext(query_file)[0]}_clouds.html'
+    conda:
+        "envs/phage_clouds.yaml"
+    params:
+        thres=config["threshold"]
+    script:
+        "scripts/draw_query_graph.py"
+
 # rule all:
 #     input:
 #         f'results/{config["host"]}_{config["threshold"]}_clouds.html'
