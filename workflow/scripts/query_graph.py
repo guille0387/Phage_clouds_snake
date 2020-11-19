@@ -12,11 +12,15 @@ def connected_component_subgraphs(G):
 def add_edges(refgraph, distfile, sizedir):
     '''This function takes the reference phage graph, the mash distance output for the query phages and a dictionary with query phage names as keys and their genome lengths as values. Based on the calculated distances, it adds edges to the reference graph and annotates the added query phages with their genome sizes. It returns the modified phage graph and a set that includes the names of the query phages added to the graph.'''
     if os.path.splitext(distfile)[1] == '.gz':
-        with gzip.open(distfile, 'rt') as input_file:
-            dist_gen = ((*line.strip().split('\t')[:2], float(line.strip().split('\t')[2])) for line in input_file if float(line.strip().split('\t')[2]) != 1)
+        input_file = gzip.open(distfile, 'rt')
     else:
-        with open(distfile) as input_file:
-            dist_gen = ((*line.strip().split('\t')[:2], float(line.strip().split('\t')[2])) for line in input_file if float(line.strip().split('\t')[2]) != 1)
+        input_file = open(distfile)
+#        with gzip.open(distfile, 'rt') as input_file:
+#            dist_gen = ((*line.strip().split('\t')[:2], float(line.strip().split('\t')[2])) for line in input_file if float(line.strip().split('\t')[2]) != 1)
+#    else:
+#        with open(distfile) as input_file:
+#            dist_gen = ((*line.strip().split('\t')[:2], float(line.strip().split('\t')[2])) for line in input_file if float(line.strip().split('\t')[2]) != 1)
+    dist_gen = ((*line.strip().split('\t')[:2], float(line.strip().split('\t')[2])) for line in input_file if float(line.strip().split('\t')[2]) != 1)
     included_query = set()
     for target, query, dist in dist_gen:
         if target not in refgraph:
@@ -24,6 +28,7 @@ def add_edges(refgraph, distfile, sizedir):
         else:
             refgraph.add_edge(target, query, weight = dist)
             included_query.add(query)
+    input_file.close()
     nx.set_node_attributes(refgraph, {key:value for key,value in sizedir.items() if key in included_query}, 'genome_size')
     return (refgraph, included_query)
 
@@ -87,7 +92,9 @@ if __name__ == '__main__':
     out_graph_file = snakemake.output[0]
     main_threshold = snakemake.params.thres
 
+    print('Reading reference phage graph...')
     ref_graph = nx.read_gpickle(ref_graph_file)
+    print('Done reading reference graph')
     if os.path.splitext(fasta_file)[1] == '.gz':
         with gzip.open(fasta_file, 'rt') as input_file:
             query_sizes = {name:len(seq) for name,seq in SimpleFastaParser(input_file)}
