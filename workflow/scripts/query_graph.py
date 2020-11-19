@@ -80,7 +80,7 @@ def get_host_subgraphs(modgraph, hosts, query_names, min_count = 1, keep_target_
 
 def colour_graph(hostgraph, hosts, query_names, query_colour = 'orange'):
     '''This function annotates the compund graph in order to colour the nodes. Nodes corresponding to reference phages that target any of the host genera in the host_set are coloured green, whereas all remaining reference phages are coloured red. Finally, a user-defined colour is used for all the query phages. The function returns the annotated graph.'''
-    colorsd = {x:{'border':'#000000', 'background':'green'} if len(set(y.get['host_genus']).intersection(hosts)) > 0 else {'border':'#000000', 'background':'red'} for x,y in hostgraph.nodes(data = True) if pd.notnull(y.get('host_genus', None))}
+    colorsd = {x:{'border':'#000000', 'background':'green'} if len(set(y.get['host_genus']).intersection(hosts)) > 0 else {'border':'#000000', 'background':'red'} for x,y in ((node, data) for node,data in hostgraph.nodes(data = True) if 'host_genus' in data.keys())}
     colorsd.update({x:{'border':'#000000', 'background':query_colour} for x in hostgraph if x in query_names})
     nx.set_node_attributes(hostgraph, colorsd, 'color')
     return hostgraph
