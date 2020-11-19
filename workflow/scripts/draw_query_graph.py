@@ -51,5 +51,5 @@ if __name__ == '__main__':
     print('Creating interactive graph file...')
     G_with_sizes = set_node_sizes_for_plotting(G)
     pg = draw_graph3(G_with_sizes, threshold)
-    pg.save(query_pyvis)
+    pg.save_graph(query_pyvis)
     print('Done making interactive graph!')
