@@ -49,7 +49,8 @@ rule draw_query_network:
     conda:
         "envs/phage_clouds.yaml"
     params:
-        thres=config["threshold"]
+        thres=config["threshold"],
+        control=config["control_board"]
     script:
         "scripts/draw_query_graph.py"
 

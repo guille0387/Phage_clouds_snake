@@ -43,6 +43,7 @@ if __name__ == '__main__':
     query_graph = snakemake.input[0]
     query_pyvis = snakemake.output[0]
     threshold = snakemake.params.thres
+    control_board = snakemake.params.control
 
     print('Reading graph that includes query phages...')
     G = nx.read_gpickle(query_graph)
@@ -50,6 +51,9 @@ if __name__ == '__main__':
 
     print('Creating interactive graph file...')
     G_with_sizes = set_node_sizes_for_plotting(G)
-    pg = draw_graph3(G_with_sizes, threshold)
+    if control_board == 'off':
+        pg = draw_graph3(G_with_sizes, threshold, show_buttons = False)
+    else:
+        pg = draw_graph3(G_with_sizes, threshold)
     pg.save_graph(query_pyvis)
     print('Done making interactive graph!')
