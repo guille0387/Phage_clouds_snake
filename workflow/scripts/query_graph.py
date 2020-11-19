@@ -78,11 +78,13 @@ def get_host_subgraphs(modgraph, hosts, query_names, min_count = 1, keep_target_
     hostgraph = nx.algorithms.operators.all.compose_all(graphs_with_host)
     return hostgraph
 
-def colour_graph(hostgraph, hosts, query_names, query_colour = 'orange'):
+def annotate_graph(hostgraph, hosts, query_names, query_colour = 'orange'):
     '''This function annotates the compund graph in order to colour the nodes. Nodes corresponding to reference phages that target any of the host genera in the host_set are coloured green, whereas all remaining reference phages are coloured red. Finally, a user-defined colour is used for all the query phages. The function returns the annotated graph.'''
     colorsd = {x:{'border':'#000000', 'background':'green'} if len(set(y.get('host_genus')).intersection(hosts)) > 0 else {'border':'#000000', 'background':'red'} for x,y in ((node, data) for node,data in hostgraph.nodes(data = True) if 'host_genus' in data.keys())}
     colorsd.update({x:{'border':'#000000', 'background':query_colour} for x in hostgraph if x in query_names})
+    titlesd = {x: f'{y["organism"]}<br>Target host genera:<br>{";".join(y["host_genus"])}<br>Genome size:<br>{y["genome_size"]} bp<br>Phage genus:<br>{y["phage_genus"]}' for x,y in hostgraph.nodes(data = True) if 'host_genus' in y.keys()}
     nx.set_node_attributes(hostgraph, colorsd, 'color')
+    nx.set_node_attributes(hostgraph, titlesd, 'title')
     return hostgraph
 
 if __name__ == '__main__':
@@ -106,5 +108,5 @@ if __name__ == '__main__':
     upper_threshold, matched_hosts = retrieve_params(dist_file, ref_graph)
     subgraph = reduce_graph(query_graph, main_threshold, added_phages, upper_threshold)
     host_subgraph = get_host_subgraphs(subgraph, matched_hosts, added_phages, keep_target_clouds_only = True)
-    host_subgraph_final = colour_graph(host_subgraph, matched_hosts, added_phages)
+    host_subgraph_final = annotate_graph(host_subgraph, matched_hosts, added_phages)
     nx.write_gpickle(host_subgraph_final, out_graph_file)
