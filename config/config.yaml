@@ -2,3 +2,4 @@ input_fasta: nine_phage.fasta
 dataset: genbank
 threshold: 0.15
 control_board: off
+colour_by_host: no

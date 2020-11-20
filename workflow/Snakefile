@@ -37,7 +37,8 @@ rule get_query_network:
     conda:
         "envs/phage_clouds.yaml"
     params:
-        thres=config["threshold"]
+        thres=config["threshold"],
+        colour=config["colour_by_host"]
     script:
         "scripts/query_graph.py"
 
