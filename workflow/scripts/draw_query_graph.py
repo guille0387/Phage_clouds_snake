@@ -29,7 +29,7 @@ def draw_graph3(networkx_graph,threshold,notebook=False,show_buttons=True,only_p
             pyvis_graph.show_buttons(filter_=['physics'])
         else:
             pyvis_graph.show_buttons()
-    pyvis_graph.toggle_physics(False)
+#    pyvis_graph.toggle_physics(False)
     return pyvis_graph
 
 # ### Resize the nodes to refelct the genome sizes
