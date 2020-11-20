@@ -79,7 +79,7 @@ def get_host_subgraphs(modgraph, hosts, query_names, min_count = 1, keep_target_
     hostgraph = nx.algorithms.operators.all.compose_all(graphs_with_host)
     return hostgraph
 
-def annotate_graph(hostgraph, hosts, query_names, query_colour = 'orange', colour_by_host = False):
+def annotate_graph(hostgraph, hosts, query_names, query_colour = '#b612df', colour_by_host = False):
     '''This function annotates the compund graph in order to colour the nodes. Nodes corresponding to reference phages that target any of the host genera in the host_set are coloured green, whereas all remaining reference phages are coloured red. Finally, a user-defined colour is used for all the query phages. The function returns the annotated graph.'''
     if colour_by_host:
         scalar_map = cm.ScalarMappable(cmap = 'tab10')
