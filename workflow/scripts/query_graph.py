@@ -87,13 +87,16 @@ def annotate_graph(hostgraph, hosts, query_names, query_colour = '#b612df', colo
         for n,item in enumerate(list(hosts)):
             host_rgba = scalar_map.to_rgba(n, norm = False)
             colour_dict[item] = colors.to_hex(host_rgba)
-        colorsd = {x:{'border':'#000000', 'background':colour_dict[list(set(y.get('host_genus')).intersection(hosts))[0]]} if len(set(y.get('host_genus')).intersection(hosts)) > 0 else {'border':'#000000', 'background':'red'} for x,y in ((node, data) for node,data in hostgraph.nodes(data = True) if 'host_genus' in data.keys())}
+        node_colorsd = {x:{'border':'#000000', 'background':colour_dict[list(set(y.get('host_genus')).intersection(hosts))[0]]} if len(set(y.get('host_genus')).intersection(hosts)) > 0 else {'border':'#000000', 'background':'red'} for x,y in ((node, data) for node,data in hostgraph.nodes(data = True) if 'host_genus' in data.keys())}
     else:
-        colorsd = {x:{'border':'#000000', 'background':'green'} if len(set(y.get('host_genus')).intersection(hosts)) > 0 else {'border':'#000000', 'background':'red'} for x,y in ((node, data) for node,data in hostgraph.nodes(data = True) if 'host_genus' in data.keys())}
-    colorsd.update({x:{'border':'#000000', 'background':query_colour} for x in hostgraph if x in query_names})
-    titlesd = {x: f'{y["organism"]}<br>Target host genera:<br>{";".join(y["host_genus"])}<br>Genome size:<br>{y["genome_size"]} bp<br>Phage genus:<br>{y["phage_genus"]}' for x,y in hostgraph.nodes(data = True) if 'host_genus' in y.keys()}
-    nx.set_node_attributes(hostgraph, colorsd, 'color')
-    nx.set_node_attributes(hostgraph, titlesd, 'title')
+        node_colorsd = {x:{'border':'#000000', 'background':'green'} if len(set(y.get('host_genus')).intersection(hosts)) > 0 else {'border':'#000000', 'background':'red'} for x,y in ((node, data) for node,data in hostgraph.nodes(data = True) if 'host_genus' in data.keys())}
+    node_colorsd.update({x:{'border':'#000000', 'background':query_colour} for x in hostgraph if x in query_names})
+    node_titlesd = {x: f'{y["organism"]}<br>Target host genera:<br>{";".join(y["host_genus"])}<br>Genome size:<br>{y["genome_size"]} bp<br>Phage genus:<br>{y["phage_genus"]}' for x,y in hostgraph.nodes(data = True) if 'host_genus' in y.keys()}
+    edge_titlesd = {(x,y):z['weight'] for x,y,z in hostgraph.edges(data = True)}
+
+    nx.set_node_attributes(hostgraph, node_colorsd, 'color')
+    nx.set_node_attributes(hostgraph, node_titlesd, 'title')
+    nx.set_edge_attributes(hostgraph, edge_titlesd, 'title')
     return hostgraph
 
 if __name__ == '__main__':
