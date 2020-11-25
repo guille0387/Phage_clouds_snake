@@ -14,15 +14,16 @@ def draw_graph3(networkx_graph,threshold,notebook=False,show_buttons=True,only_p
     pyvis_graph.force_atlas_2based()
     #pyvis_graph.inherit_edge_colors(False)
 
+    max_dist = max([z['weight'] for x,y,z in networkx_graph.edges(data = True)])
     for node,node_attrs in networkx_graph.nodes(data=True):
         pyvis_graph.add_node(node,**node_attrs)
     for source,target,edge_attrs in tqdm(networkx_graph.edges(data=True), desc="Drawing the graph"):
         if not 'value' in edge_attrs and not 'width' in edge_attrs and 'weight' in edge_attrs:
-            edge_attrs['value']=threshold-edge_attrs['weight']+0.1
+            edge_attrs['value']=max_dist-edge_attrs['weight']+0.1
             #edge_attrs['color'] = '#000000'
         edge_attrs['color'] = 'lightgray'
         if edge_attrs['weight'] > threshold:
-            edge_attrs['style'] = 'dashed'
+            edge_attrs['dashes'] = True
         pyvis_graph.add_edge(source,target,**edge_attrs)
     if show_buttons:
         if only_physics_buttons:
