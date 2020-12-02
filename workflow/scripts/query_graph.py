@@ -25,13 +25,14 @@ def add_edges(refgraph, distfile, sizedir):
 #            refgraph.add_edge(target, query, weight = dist)
 #            included_query.add(query)
     for target, query, dist in dist_gen:
-        refgraph.add_edge(target, query, weight = dist)
-        included_query.add(query)
+        if target != query:
+            refgraph.add_edge(target, query, weight = dist)
+            included_query.add(query)
     input_file.close()
     nx.set_node_attributes(refgraph, {key:value for key,value in sizedir.items() if key in included_query}, 'genome_size')
-    return (refgraph, included_query)
+    return included_query
 
-def retrieve_params(distfile, refgraph):
+def retrieve_params(distfile, refgraph, accessions):
     '''This function takes the mash distance output for the query phages and the unmodified reference phage graph. It extracts the best hits for each query phage and from these it generates a set of matched host genera. In addition, it extracts the best distance value for each query and then identifies the maximum value among these. The function returns this max value and the set of matched host genera.'''
     if os.path.splitext(distfile)[1] == '.gz':
         with gzip.open(distfile, 'rt') as input_file:
@@ -40,7 +41,7 @@ def retrieve_params(distfile, refgraph):
         with open(distfile) as input_file:
             target_query_list = [(*line.strip().split('\t')[:2], float(line.strip().split('\t')[2])) for line in input_file if float(line.strip().split('\t')[2]) != 1]
     target_query_list = sorted(target_query_list, key = lambda x: x[2])
-    filtered_list = list(filter(lambda x: x[0] in refgraph, target_query_list))
+    filtered_list = list(filter(lambda x: x[0] in accessions, target_query_list))
     print(filtered_list[:6])
     hits_dir = defaultdict(list)
 #    for target, query, dist in target_query_list:
@@ -117,6 +118,7 @@ if __name__ == '__main__':
 
     print('Reading reference phage graph...')
     ref_graph = nx.read_gpickle(ref_graph_file)
+    ref_accessions = set(ref_graph)
     print('Done reading reference graph')
     if os.path.splitext(fasta_file)[1] == '.gz':
         with gzip.open(fasta_file, 'rt') as input_file:
@@ -125,9 +127,9 @@ if __name__ == '__main__':
         with open(fasta_file) as input_file:
             query_sizes = {name:len(seq) for name,seq in SimpleFastaParser(input_file)}
 
-    query_graph, added_phages = add_edges(ref_graph, dist_file, query_sizes)
-    upper_threshold, matched_hosts = retrieve_params(dist_file, ref_graph)
-    subgraph = reduce_graph(query_graph, main_threshold, added_phages, upper_threshold)
+    added_phages = add_edges(ref_graph, dist_file, query_sizes)
+    upper_threshold, matched_hosts = retrieve_params(dist_file, ref_graph, ref_accessions)
+    subgraph = reduce_graph(ref_graph, main_threshold, added_phages, upper_threshold)
     host_subgraph = get_host_subgraphs(subgraph, matched_hosts, added_phages, keep_target_clouds_only = True)
     host_subgraph_final = annotate_graph(host_subgraph, matched_hosts, added_phages, colour_by_host = colour_host)
     nx.write_gpickle(host_subgraph_final, out_graph_file)
