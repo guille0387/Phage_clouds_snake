@@ -52,7 +52,7 @@ def retrieve_params(distfile, refgraph):
     for target, query, dist in target_query_list:
         host = refgraph.nodes[target].get('host_genus')
         hits_dir[query].append((dist, target, host))
-    best_hits = [hits_dir[x][0r] for x in hits_dir.keys()]
+    best_hits = [hits_dir[x][0] for x in hits_dir.keys()]
     host_set = {y for x in best_hits for y in x[2]}
     host_set.discard('not defined')
     best_dist = [x[0] for x in best_hits]
