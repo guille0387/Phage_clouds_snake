@@ -25,8 +25,8 @@ rule mash_dist:
         dist_file=f'results/{config["dataset"]}_{os.path.splitext(query_file)[0]}_mash_dist_k15_s24000.tsv'
     threads: 10
     run:
-        query_prefix = os.path.splitext({output.query_sketch})[0]
-        comp_prefix = os.path.splitext({output.whole_sketch})[0]
+        query_prefix = os.path.splitext(output.query_sketch)[0]
+        comp_prefix = os.path.splitext(output.whole_sketch)[0]
         print(f'Creating sketch file for {query_file}...')
         shell(f'mash sketch -p 10 -i -k 15 -s 24000 -o {query_prefix} {input.query}')
         print('Done creating sketch file for query sequences')
