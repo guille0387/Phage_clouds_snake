@@ -41,9 +41,7 @@ def retrieve_params(distfile, refgraph):
             target_query_list = [(*line.strip().split('\t')[:2], float(line.strip().split('\t')[2])) for line in input_file if float(line.strip().split('\t')[2]) != 1]
     target_query_list = sorted(target_query_list, key = lambda x: x[2])
     target_query_list = filter(lambda x: x[0] in refgraph, target_query_list)
-    for item in target_query_list:
-        if item[0] not in refgraph:
-            print(item)
+    print(target_query_list[:6])
     hits_dir = defaultdict(list)
 #    for target, query, dist in target_query_list:
 #        if target not in refgraph:
