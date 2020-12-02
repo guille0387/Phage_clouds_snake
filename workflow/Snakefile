@@ -20,8 +20,8 @@ rule mash_dist:
         ref_sketch=graph_workflow(os.path.join(graph_output_dir, 'all_records_k15_s24000.msh')),
         query=query_file
     output:
-        query_sketch=temp(f'results/{os.path.splitext(query_file)[0]}_k15_s24000.msh'),
-        whole_sketch=temp(f'results/{config["dataset"]}_{os.path.splitext(query_file)[0]}_k15_s24000.msh'),
+        query_sketch=f'results/{os.path.splitext(query_file)[0]}_k15_s24000.msh',
+        whole_sketch=f'results/{config["dataset"]}_{os.path.splitext(query_file)[0]}_k15_s24000.msh',
         dist_file=f'results/{config["dataset"]}_{os.path.splitext(query_file)[0]}_mash_dist_k15_s24000.tsv'
     threads: 10
     run:
