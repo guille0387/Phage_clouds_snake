@@ -16,19 +16,17 @@ def add_edges(refgraph, distfile, sizedir):
         input_file = gzip.open(distfile, 'rt')
     else:
         input_file = open(distfile)
-#        with gzip.open(distfile, 'rt') as input_file:
-#            dist_gen = ((*line.strip().split('\t')[:2], float(line.strip().split('\t')[2])) for line in input_file if float(line.strip().split('\t')[2]) != 1)
-#    else:
-#        with open(distfile) as input_file:
-#            dist_gen = ((*line.strip().split('\t')[:2], float(line.strip().split('\t')[2])) for line in input_file if float(line.strip().split('\t')[2]) != 1)
     dist_gen = ((*line.strip().split('\t')[:2], float(line.strip().split('\t')[2])) for line in input_file if float(line.strip().split('\t')[2]) != 1)
     included_query = set()
+#    for target, query, dist in dist_gen:
+#        if target not in refgraph:
+#            continue
+#        else:
+#            refgraph.add_edge(target, query, weight = dist)
+#            included_query.add(query)
     for target, query, dist in dist_gen:
-        if target not in refgraph:
-            continue
-        else:
-            refgraph.add_edge(target, query, weight = dist)
-            included_query.add(query)
+        refgraph.add_edge(target, query, weight = dist)
+        included_query.add(query)
     input_file.close()
     nx.set_node_attributes(refgraph, {key:value for key,value in sizedir.items() if key in included_query}, 'genome_size')
     return (refgraph, included_query)
@@ -43,12 +41,15 @@ def retrieve_params(distfile, refgraph):
             target_query_list = [(*line.strip().split('\t')[:2], float(line.strip().split('\t')[2])) for line in input_file if float(line.strip().split('\t')[2]) != 1]
     target_query_list = sorted(target_query_list, key = lambda x: x[2])
     hits_dir = defaultdict(list)
-    for target, query, dist in target_query_list:
-        if target not in refgraph:
-            continue
-        else:
-            host = refgraph.nodes[target].get('host_genus')
-            hits_dir[query].append((dist, target, host))
+#    for target, query, dist in target_query_list:
+#        if target not in refgraph:
+#            continue
+#        else:
+#            host = refgraph.nodes[target].get('host_genus')
+#            hits_dir[query].append((dist, target, host))
+    for target, query, dist in filter(lambda x: x[0] in refgraph, target_query_list):
+        host = refgraph.nodes[target].get('host_genus')
+        hits_dir[query].append((dist, target, host))
     best_hits = [hits_dir[x][0] for x in hits_dir.keys()]
     host_set = {y for x in best_hits for y in x[2]}
     host_set.discard('not defined')

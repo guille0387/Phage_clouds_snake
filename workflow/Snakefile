@@ -17,23 +17,33 @@ subworkflow graph_workflow:
 
 rule mash_dist:
     input:
-        graph_workflow(os.path.join(graph_output_dir, 'all_records_k15_s24000.msh')),
-        query_file
+        ref_sketch=graph_workflow(os.path.join(graph_output_dir, 'all_records_k15_s24000.msh')),
+        query=query_file
     output:
-        f'results/{os.path.splitext(query_file)[0]}_mash_dist_k15_s24000.tsv'
+        query_sketch=temp(f'results/{os.path.splitext(query_file)[0]}_k15_s24000.msh'),
+        whole_sketch=temp(f'results/{config["dataset"]}_{os.path.splitext(query_file)[0]}_k15_s24000.msh'),
+        dist_file=f'results/{config["dataset"]}_{os.path.splitext(query_file)[0]}_mash_dist_k15_s24000.tsv'
     threads: 10
     run:
-        print('Calculating mash distances between query sequences and reference dataset...')
-        shell("mash dist -p 10 -i -v 1e-10 {input} > {output}")
+        query_prefix = os.path.splitext({output.query_sketch})[0]
+        comp_prefix = os.path.splitext({output.whole_sketch})[0]
+        print(f'Creating sketch file for {query_file}...')
+        shell(f'mash sketch -p 10 -i -k 15 -s 24000 -o {query_prefix} {input.query}')
+        print('Done creating sketch file for query sequences')
+        print('Creating compound sketch file...')
+        shell(f'mash paste {comp_prefix} {input.ref_sketch} {output.query_sketch}')
+        print('Done creating compound sketch file')
+        print('Calculating mash distances between query sequences and compound sketch...')
+        shell("mash dist -p 10 -i -v 1e-10 {output.whole_sketch} {input.query} > {output.dist_file}")
         print(f'Done creating {output}')
 
 rule get_query_network:
     input:
         fasta=query_file,
-        dist=f'results/{os.path.splitext(query_file)[0]}_mash_dist_k15_s24000.tsv',
+        dist=f'results/{config["dataset"]}_{os.path.splitext(query_file)[0]}_mash_dist_k15_s24000.tsv',
         ref_graph=graph_workflow(os.path.join(graph_output_dir, 'annotated_graph.nxpkl.gz'))
     output:
-        f'results/{os.path.splitext(query_file)[0]}_query_graph.nxpkl.gz'
+        f'results/{config["dataset"]}_{os.path.splitext(query_file)[0]}_graph.nxpkl.gz'
     conda:
         "envs/phage_clouds.yaml"
     params:
@@ -44,9 +54,9 @@ rule get_query_network:
 
 rule draw_query_network:
     input:
-        f'results/{os.path.splitext(query_file)[0]}_query_graph.nxpkl.gz'
+        f'results/{config["dataset"]}_{os.path.splitext(query_file)[0]}_graph.nxpkl.gz'
     output:
-        f'results/{os.path.splitext(query_file)[0]}_clouds.html'
+        f'results/{config["dataset"]}_{os.path.splitext(query_file)[0]}_clouds.html'
     conda:
         "envs/phage_clouds.yaml"
     params:
@@ -54,65 +64,3 @@ rule draw_query_network:
         control=config["control_board"]
     script:
         "scripts/draw_query_graph.py"
-
-# rule all:
-#     input:
-#         f'results/{config["host"]}_{config["threshold"]}_clouds.html'
-#
-# rule get_fasta_metadata:
-#     input:
-#         config["input_dir"]
-#     output:
-#         fa="results/all_gbk_records.fna",
-#         meta="results/gbk_records_metadata.pkl"
-#     conda:
-#         "envs/phage_clouds.yaml"
-#     script:
-#         "scripts/get_fasta_metadata.py"
-#
-# rule ref_sketch:
-#     input:
-#         "results/all_gbk_records.fna"
-#     output:
-#         "results/all_gbk_records_k15_s24000.msh"
-#     threads: 10
-#     run:
-#         print('mash sketching parameters: kmer_size = 15, sketch_size = 24000')
-#         shell("mash sketch -p 10 -i -o {output} -k 15 -s 24000 {input}")
-#
-# rule mash_dist:
-#     input:
-#         "results/all_gbk_records_k15_s24000.msh",
-#         "results/all_gbk_records.fna"
-#     output:
-#         "results/all_vs_all_nucl_k15_s24000.tbl"
-#     threads: 10
-#     run:
-#         print('Calculating all vs all mash distance table (p-value reporting threshold 1e-10)...')
-#         shell("mash dist -p 10 -i -t -v 1e-10 {input} > {output}")
-#         print(f'Done creating {output}')
-#
-# rule get_network:
-#     input:
-#         mashtbl="results/all_vs_all_nucl_k15_s24000.tbl",
-#         annotdict="results/gbk_records_metadata.pkl"
-#     output:
-#         plaingraph="results/all_gbk_records_graph.nxpkl.gz",
-#         annotgraph="results/all_gbk_records_graph_annotated.nxpkl.gz"
-#     conda:
-#         "envs/phage_clouds.yaml"
-#     script:
-#         "scripts/generate_graph.py"
-#
-# rule draw_graph:
-#     input:
-#         "results/all_gbk_records_graph_annotated.nxpkl.gz"
-#     output:
-#         f'results/{config["host"]}_{config["threshold"]}_clouds.html'
-#     conda:
-#         "envs/phage_clouds.yaml"
-#     params:
-#         host=config["host"],
-#         thres=config["threshold"]
-#     script:
-#         "scripts/draw_graph.py"
