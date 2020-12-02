@@ -40,7 +40,7 @@ def retrieve_params(distfile, refgraph):
         with open(distfile) as input_file:
             target_query_list = [(*line.strip().split('\t')[:2], float(line.strip().split('\t')[2])) for line in input_file if float(line.strip().split('\t')[2]) != 1]
     target_query_list = sorted(target_query_list, key = lambda x: x[2])
-    target_query_list = filter(lambda x: x[0] in refgraph, target_query_list)
+    target_query_list = list(filter(lambda x: x[0] in refgraph, target_query_list))
     print(target_query_list[:6])
     hits_dir = defaultdict(list)
 #    for target, query, dist in target_query_list:
@@ -52,7 +52,7 @@ def retrieve_params(distfile, refgraph):
     for target, query, dist in target_query_list:
         host = refgraph.nodes[target].get('host_genus')
         hits_dir[query].append((dist, target, host))
-    best_hits = [hits_dir[x][0] for x in hits_dir.keys()]
+    best_hits = [hits_dir[x][0r] for x in hits_dir.keys()]
     host_set = {y for x in best_hits for y in x[2]}
     host_set.discard('not defined')
     best_dist = [x[0] for x in best_hits]
