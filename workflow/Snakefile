@@ -20,22 +20,19 @@ rule mash_dist:
         ref_sketch=graph_workflow(os.path.join(graph_output_dir, 'all_records_k15_s24000.msh')),
         query=query_file
     output:
-        query_sketch=f'results/{os.path.splitext(query_file)[0]}_k15_s24000.msh',
-        whole_sketch=f'results/{config["dataset"]}_{os.path.splitext(query_file)[0]}_k15_s24000.msh',
+        query_sketch=temp(f'results/{os.path.splitext(query_file)[0]}_k15_s24000.msh'),
+        whole_sketch=temp(f'results/{config["dataset"]}_{os.path.splitext(query_file)[0]}_k15_s24000.msh'),
         dist_file=f'results/{config["dataset"]}_{os.path.splitext(query_file)[0]}_mash_dist_k15_s24000.tsv'
     threads: 10
     run:
         query_prefix = os.path.splitext(output.query_sketch)[0]
         comp_prefix = os.path.splitext(output.whole_sketch)[0]
-        print(f'Creating sketch file for {query_file}...')
         shell(f'mash sketch -p 10 -i -k 15 -s 24000 -o {query_prefix} {input.query}')
-        print('Done creating sketch file for query sequences')
         print('Creating compound sketch file...')
         shell(f'mash paste {comp_prefix} {input.ref_sketch} {output.query_sketch}')
-        print('Done creating compound sketch file')
         print('Calculating mash distances between query sequences and compound sketch...')
         shell("mash dist -p 10 -i -v 1e-10 {output.whole_sketch} {input.query} > {output.dist_file}")
-        print(f'Done creating {output}')
+        print(f'Done creating {output.dist_file}')
 
 rule get_query_network:
     input:
