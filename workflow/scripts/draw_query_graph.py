@@ -4,12 +4,11 @@ import pandas as pd
 import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
 import matplotlib.pyplot as plt
-from pyvis.network import Network
+from pyvis import network as net
 from collections import Counter
 from tqdm import tqdm
 
 def draw_graph3(networkx_graph,threshold,notebook=False,show_buttons=True,only_physics_buttons=False):
-    from pyvis import network as net
     pyvis_graph = net.Network(notebook=notebook, height='1500px', width='1500px')
     pyvis_graph.force_atlas_2based()
     #pyvis_graph.inherit_edge_colors(False)
