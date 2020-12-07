@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os, re, glob, sys, gzip, ast
 import numpy as np
 import pandas as pd

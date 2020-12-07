@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os, gzip
 import pandas as pd
 import networkx as nx
