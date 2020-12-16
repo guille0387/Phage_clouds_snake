@@ -43,12 +43,18 @@ rule ref_sketch:
 
 rule mash_dist:
     input:
-        fasta='gut_graph_files/{subset}.fa.gz',
-        sketch='gut_graph_files{subset}.msh'
+        high_fasta=f'gut_graph_files/{config["sequence_file"].split(".")[0]}_high_quality.fa.gz',
+        frag_fasta=f'gut_graph_files/{config["sequence_file"].split(".")[0]}_genome_fragment.fa.gz',
+        high_sketch=f'gut_graph_files/{config["sequence_file"].split(".")[0]}_high_quality.msh',
+        frag_sketch=f'gut_graph_files/{config["sequence_file"].split(".")[0]}_genome_fragment.msh'
     output:
-        'gut_graph_files/{subset}.tbl'
-    threads: 10
+        high_high=f'gut_graph_files/{config["sequence_file"].split(".")[0]}_high_vs_high.tbl',
+        high_frag=f'gut_graph_files/{config["sequence_file"].split(".")[0]}_high_vs_frag.tbl',
+        frag_frag=f'gut_graph_files/{config["sequence_file"].split(".")[0]}_frag_vs_frag.tbl'
+    threads: 20
     run:
         print('Calculating all vs all mash distance tables (p-value reporting threshold 1e-10)...')
-        shell("mash dist -p 10 -i -t -v 1e-10 {input.sketch} {input.fasta} > {output}")
-        print('Done creating mash distance tables!')
+        shell("mash dist -p 10 -i -v 1e-10 {input.high_sketch} {input.high_fasta} > {output.high_high}")
+        shell("mash dist -p 10 -i -v 1e-10 {input.high_sketch} {input.frag_fasta} > {output.high_frag}")
+        shell("mash dist -p 20 -i -v 1e-10 {input.frag_sketch} {input.frag_fasta} > {output.frag_frag}")
+        print('Done creating mash distance output files!')
