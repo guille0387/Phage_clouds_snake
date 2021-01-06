@@ -58,3 +58,14 @@ rule mash_dist:
         shell("mash dist -p 10 -i -v 1e-10 {input.high_sketch} {input.frag_fasta} > {output.high_frag}")
         shell("mash dist -p 20 -i -v 1e-10 {input.frag_sketch} {input.frag_fasta} > {output.frag_frag}")
         print('Done creating mash distance output files!')
+
+rule get_network:
+    input:
+        f'gut_graph_files/{config["sequence_file"].split(".")[0]}_high_vs_high.tbl',
+        f'gut_graph_files/{config["sequence_file"].split(".")[0]}_high_vs_frag.tbl',
+        f'gut_graph_files/{config["sequence_file"].split(".")[0]}_frag_vs_frag.tbl'
+    output:
+        'gut_graph_files/edge_list.tsv'
+    shell:
+        " ".join(['awk', '-F', '"\t"', '$1 == $2 {next} {print $1"\t"$2"\t"$3}'] + input) + f' > {output[0]}'
+#        awk -F '\t' '$1 == $2 {next} {print $1"\t"$2"\t"$3}' gut_graph_files/*.tbl > gut_graph_files/edge_list.tsv
